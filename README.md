@@ -14,3 +14,15 @@ scripts for drone developement
 **start_mavros.sh**
 
 start mavros with UART connection with NXTPX4
+
+-----------
+
+**jetson_env**
+
+- l4t
+
+   hardware drivers, divices tree, kernel, bootloader, etc.
+
+- opencv
+
+   opencv installer
