@@ -1,3 +1,5 @@
+USER=dji
+PASSWORD=dji
 BAG_PATH=/home/dji/workspace/bag/data_set
 # CONFIG_PATH=/home/dji/SwarmConfig
 BAG_PID_FILE=/home/dji/workspace/tmp/bag_pid_bag.txt

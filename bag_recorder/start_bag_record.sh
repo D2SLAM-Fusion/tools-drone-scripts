@@ -6,7 +6,8 @@
 # # mkdir -p $BAG_PATH/
 # RECORD=/opt/ros/noetic/lib/rosbag/record
 # ARGS="--buffsize 4096"
-source ./bag_config.sh
+
+source ./bag_config_local.sh
 
 if [ ! -d ${BAG_PATH} ]
 then
@@ -227,4 +228,4 @@ fi
 
 # echo "DOCKER START OK;"
 chmod a+rw $BAG_PID_FILE
-chown dji $LOG_PATH/log_bag.txt
+chown $USER $LOG_PATH/log_bag.txt
