@@ -21,18 +21,23 @@ OAK_TAG="oak_ffc_img:latest"
 D2SLAM_IMG="$DOCKER_REGISTRY/hkustswarm/d2slam:jetson"
 D2SLAM_TAG="d2slam:jetson"
 
+workspace=$HOME/workspace
+
 # help function
 function usage() {
     echo "Usage: $file_name [options]"
     echo "Options:"
-    echo "  -h,     --help                  show this help message and exit"
+    echo "  -h,     --help                  Show this help message and exit"
     echo "  -s,     --setup                 Setup"
     echo "  -oc,    --overclock_cpu         Overclock CPU"
-    echo "  -og,    --overclock_gpu         verclock GPU"
+    echo "  -og,    --overclock_gpu         Overclock GPU"
     echo "  -p,     --pull_images           Pull docker images"
+    echo "  -g,     --clone_github          Clone github repositories"
     echo "Example:"
     echo "  $file_name --setup"
 }
+
+
 
 # setup function
 function setup() {
@@ -56,13 +61,44 @@ function setup() {
     sudo bash -c "echo '$daemon_json' > /etc/docker/daemon.json"
     sudo systemctl restart docker
     docker login -u $DOCKER_USER -p $DOCKER_PASSWORD $DOCKER_REGISTRY
+}
 
+function pull_images() {
     # pull docker images
     echo "[$file_name] Pulling docker images"
     docker pull $OAK_IMG
     docker tag $OAK_IMG $OAK_TAG
     docker pull $D2SLAM_IMG
     docker tag $D2SLAM_IMG $D2SLAM_TAG
+}
+
+function clone_github() {
+    # clone github repositories
+    echo "[$file_name] Cloning github repositories"
+    mkdir -p $workspace
+    if [ -d "$workspace/perception-D2SLAM" ]; then
+        echo "[$file_name] perception-D2SLAM already exists"
+    else
+        git clone https://github.com/D2SLAM-Fusion/perception-D2SLAM.git $workspace/perception-D2SLAM
+    fi
+
+    if [ -d "$workspace/perception-ONNX-CREStereo-Depth-Estimation" ]; then
+        echo "[$file_name] perception-ONNX-CREStereo-Depth-Estimation already exists"
+    else
+        git clone https://github.com/D2SLAM-Fusion/perception-ONNX-CREStereo-Depth-Estimation.git $workspace/perception-ONNX-CREStereo-Depth-Estimation
+    fi
+
+    if [ -d "$workspace/perception-ONNX-HITNET-Stereo-Depth-estimation" ]; then
+        echo "[$file_name] perception-ONNX-HITNET-Stereo-Depth-estimation already exists"
+    else
+        git clone https://github.com/D2SLAM-Fusion/perception-ONNX-HITNET-Stereo-Depth-estimation.git $workspace/perception-ONNX-HITNET-Stereo-Depth-estimation
+    fi
+
+    if [ -d "$workspace/configs-drone-swarm" ]; then
+        echo "[$file_name] configs-drone-swarm already exists"
+    else
+        git clone https://github.com/D2SLAM-Fusion/configs-drone-swarm.git $workspace/configs-drone-swarm
+    fi
 }
 
 # overclock functions
@@ -111,6 +147,14 @@ function main() {
                 ;;
             -og|--overclock_gpu)
                 overclock_gpu
+                shift
+                ;;
+            -p|--pull_images)
+                pull_images
+                shift
+                ;;
+            -g|--clone_github)
+                clone_github
                 shift
                 ;;
             *)
