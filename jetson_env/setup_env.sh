@@ -3,6 +3,25 @@ set -e
 file_name=$(basename "$0")
 script_path=$(dirname "$(readlink -f "$0")")
 
+# environment variables
+DOCKER_USER="hkust-swarm"
+DOCKER_PASSWORD="HKUSTswarm123"
+DOCKER_REGISTRY="192.168.31.14"
+daemon_json='''{
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    },
+    "insecure-registries": ["192.168.31.14"]
+}'''
+OAK_IMG="$DOCKER_REGISTRY/hkustswarm/oak_ffc_img"
+OAK_TAG="oak_ffc_img:latest"
+D2SLAM_IMG="$DOCKER_REGISTRY/hkustswarm/d2slam:jetson"
+D2SLAM_TAG="d2slam:jetson"
+
+# help function
 function usage() {
     echo "Usage: $file_name [options]"
     echo "Options:"
@@ -10,10 +29,12 @@ function usage() {
     echo "  -s,     --setup                 Setup"
     echo "  -oc,    --overclock_cpu         Overclock CPU"
     echo "  -og,    --overclock_gpu         verclock GPU"
+    echo "  -p,     --pull_images           Pull docker images"
     echo "Example:"
     echo "  $file_name --setup"
 }
 
+# setup function
 function setup() {
     # source environment
     echo "[$file_name] Sourcing ROS environment"
@@ -27,8 +48,24 @@ function setup() {
     chmod +x install_geographiclib_datasets.sh
     sudo bash install_geographiclib_datasets.sh
     rm install_geographiclib_datasets.sh
+
+    # configure docker
+    echo "[$file_name] Configuring docker"
+    sudo groupadd docker || true
+    sudo usermod -aG docker $USER
+    sudo bash -c "echo '$daemon_json' > /etc/docker/daemon.json"
+    sudo systemctl restart docker
+    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD $DOCKER_REGISTRY
+
+    # pull docker images
+    echo "[$file_name] Pulling docker images"
+    docker pull $OAK_IMG
+    docker tag $OAK_IMG $OAK_TAG
+    docker pull $D2SLAM_IMG
+    docker tag $D2SLAM_IMG $D2SLAM_TAG
 }
 
+# overclock functions
 function overclock_cpu() {
     # configure nvpmodel CPUmax
     echo "[$file_name] Configuring nvpmodel CPUmax"
@@ -47,6 +84,7 @@ function overclock_gpu() {
     sudo systemctl start overclock.service
 }
 
+# main function
 function main() {
     # check if no option is provided
     if [[ $# -eq 0 ]]; then
