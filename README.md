@@ -3,9 +3,9 @@ scripts for drone developement
 
 -------------
 
-**bag_recorder** :  
+**bag_recorder** :
 
-1. modify bag_config.sh to specify your bag location and log file path.  
+1. modify bag_config.sh to specify your bag location and log file path.
 2. start_bag_record.sh [mode]
    * mode = 8: record oak_ffc_4p image and imu data
 3. stop_bag.sh
@@ -26,3 +26,15 @@ start mavros with UART connection with NXTPX4
 - opencv
 
    opencv installer
+
+- mesh
+
+   mesh network setup
+
+- overclock
+
+   overclock settings
+
+- setup_env.sh
+
+   setup_env.sh [options] | example: setup_env.sh -s -og
