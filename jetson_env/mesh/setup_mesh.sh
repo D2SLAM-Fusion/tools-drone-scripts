@@ -116,15 +116,6 @@ IP=$(( $1 + 10 ))
 # Print the Mesh IP and Wlan0 IP
 echo "Mesh IP: 10.0.0.$IP"
 
-# Check if the 'batman_adv' module is loaded
-if lsmod | grep -q "batman_adv"; then
-    echo "The 'batman_adv' module is loaded."
-else
-    echo "The 'batman_adv' module is not loaded."
-    echo "Now loading the 'batman_adv' module..."
-    load_batman_adv
-fi
-
 # Check if the 'batctl' command is available
 if command -v batctl &> /dev/null; then
     echo "The 'batctl' command is available."
@@ -132,6 +123,15 @@ else
     echo "The 'batctl' command is not available."
     echo "Now installing the 'batctl' command..."
     install_batctl
+fi
+
+# Check if the 'batman_adv' module is loaded
+if lsmod | grep -q "batman_adv"; then
+    echo "The 'batman_adv' module is loaded."
+else
+    echo "The 'batman_adv' module is not loaded."
+    echo "Now loading the 'batman_adv' module..."
+    load_batman_adv
 fi
 
 # Configure wlan0
