@@ -1,0 +1,3 @@
+export ROS_HOSTNAME=ubuntu
+export ROS_MASTER_URI=http://192.168.0.110:11311
+export ROS_IP=192.168.0.110
